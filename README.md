@@ -4,7 +4,7 @@ This code demonstrates how to extract and visualize word and image vectors using
 
 ## Requirements
 
-- Python 3.x
+- Python 3.11
 - PyTorch
 - Transformers
 - Pillow
