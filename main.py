@@ -216,7 +216,7 @@ class CustomLlavaForConditionalGeneration(LlavaForConditionalGeneration):
         return final_embedding, final_attention_mask, final_labels, position_ids
 
 
-def test():
+def generate_word_and_image_vectors():
 
     words = [
         "city",
@@ -338,5 +338,5 @@ def test_config():
 
 
 if __name__ == "__main__":
-    # test()
+    generate_word_and_image_vectors()
     visualize()
