@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "llava-test"
+version = "0.1.0"
+description = ""
+authors = ["Scott Suk <scottsuk0306@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+transformers = "^4.41.1"
+torch = "^2.3.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
