@@ -1,6 +1,12 @@
-# Word and Image Vector Visualization with Llava
+# VLM Evaluation & Word and Image Vector Visualization
 
-This code demonstrates how to extract and visualize word and image vectors using the Llava model. It provides functionality to generate word and image vectors for a predefined set of words, and then visualizes these vectors using t-SNE (t-Distributed Stochastic Neighbor Embedding).
+The code in this repository is composed of two components.
+
+1. VLM evaluation using GPT-4V
+- Files under `vision_eval/` include code for response generation in VLMs and response evaluation with GPT-4V. You can also find the raw response and GPT-4V generated feedback here. 
+2. Word and Image Vector Visualization
+- This code demonstrates how to extract and visualize word and image vectors using the Llava model. It provides functionality to generate word and image vectors for a predefined set of words, and then visualizes these vectors using t-SNE (t-Distributed Stochastic Neighbor Embedding).
+- Refer to `main.py` for more information.
 
 ## Requirements
 
