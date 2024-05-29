@@ -12,6 +12,7 @@ from sklearn.manifold import TSNE
 from transformers import (AutoProcessor, AutoTokenizer, CLIPVisionConfig,
                           LlamaConfig, LlavaConfig,
                           LlavaForConditionalGeneration)
+import torch.nn.functional as F
 
 
 def is_english(word):
@@ -70,6 +71,10 @@ def get_words_ids():
     return words_to_ids, ids_to_words
 
 
+def get_tokenizer():
+    return AutoTokenizer.from_pretrained("llava-hf/llava-1.5-7b-hf")
+
+
 word_and_image_vectors = {}
 
 
@@ -78,23 +83,63 @@ class CustomLlavaForConditionalGeneration(LlavaForConditionalGeneration):
     def _merge_input_ids_with_image_features(
         self, image_features, inputs_embeds, input_ids, attention_mask, labels
     ):
-
         _, ids_to_words = get_words_ids()
         word = ids_to_words[int(input_ids[0][-1])]
+        print("\n")
+        print("Word:", word, "ID:", input_ids[0][-1])
+        
+        embedding_matrix = self.language_model.get_input_embeddings().weight.data        
+        
+        norm_image_features = F.normalize(image_features, p=2, dim=2)
+        norm_embedding_matrix = F.normalize(embedding_matrix, p=2, dim=1)
+        norm_embedding_matrix_t = norm_embedding_matrix.transpose(0, 1)
+        cosine_similarity_matrix = torch.matmul(norm_image_features, norm_embedding_matrix_t)
+
+        k = 10  # For example, find the top 5 highest cosine similarities
+        top_values, top_indices = torch.topk(cosine_similarity_matrix, k, dim=2)
+
+        top_indices_squeezed = top_indices.squeeze(0)  # Now shape is [576, k]
+
+        print("Top k indices for the first image feature vector:")
+        print(top_indices_squeezed[0])
+        
+        tokenizer = get_tokenizer()
+        # decoded_tokens = tokenizer.decode(top_indices_squeezed[0].tolist())
+
+        # Calculate the rank of word_id in cosine_similarity_matrix
+
+        word_id = int(input_ids[0][-1])
+        
+        values_at_word_id = cosine_similarity_matrix[:, :, word_id]
+
+        # Compute the rank of the word_id in each feature vector
+        greater_than_word_id = cosine_similarity_matrix > values_at_word_id.unsqueeze(2)
+        rank_of_word_id = greater_than_word_id.sum(dim=2)
+
+        print("Rank of word_id for each image feature vector:")
+        print(rank_of_word_id)
+        
+        
+        # Calculate the average rank of word_id across all feature vectors
+        average_rank = rank_of_word_id.float().mean().item()
+
+        # Calculate the maximum rank of word_id across all feature vectors
+        max_rank = rank_of_word_id.min().item()
+
+        print("Average rank of word_id across all image feature vectors:", average_rank)
+        print("Minimum rank of word_id across all image feature vectors:", max_rank)
+
 
         # print(image_features.shape)
         # print(inputs_embeds.shape)
 
         # image_vector = image_features.mean(dim=1)
         image_vector = image_features.max(dim=1)[0]
-        # print(image_vector.shape)
-        image_vector.reshape(1, 4096)
 
         word_vector = inputs_embeds[0][-1]
         # print(word_vector.shape)
         word_vector.reshape(1, 4096)
 
-        assert image_vector.shape == torch.Size([1, 4096])
         assert word_vector.shape == torch.Size([4096])
 
         global word_and_image_vectors

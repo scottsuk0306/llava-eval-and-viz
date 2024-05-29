@@ -1,6 +1,8 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,macos,linux,windows,jupyternotebooks
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,macos,linux,windows,jupyternotebooks
 
+embedding_matrix.pkl
+
 ### JupyterNotebooks ###
 # gitignore template for Jupyter Notebooks
 # website: http://jupyter.org/
